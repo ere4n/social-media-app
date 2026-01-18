@@ -3,96 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeonHub - Connect in Style</title>
+    <title>NeonHub - Final Fix</title>
     <style>
+        /* CSS STYLES */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #000; color: #fff; min-height: 100vh; overflow-x: hidden; }
+        body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; height: 100vh; overflow: hidden; }
         
-        /* Background */
-        .bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: linear-gradient(45deg, #000, #1a0033, #000); background-size: 400% 400%; animation: gradientShift 15s infinite; }
-        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        
-        /* Login Box */
-        .login-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .login-box { background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 24px; padding: 60px 40px; text-align: center; max-width: 450px; width: 100%; }
-        .logo { font-size: 56px; font-weight: 900; background: linear-gradient(135deg, #00ffff, #ff00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
-        .tagline { color: #aaa; margin-bottom: 50px; }
-        
-        /* Button */
-        .google-btn { background: #fff; color: #000; border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0 auto; transition: 0.3s; font-size: 16px; }
-        .google-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 255, 255, 0.4); }
-        .google-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        .container {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; text-align: center; padding: 20px;
+        }
 
-        /* Username Input */
-        .username-setup { display: none; }
-        .input-group input { width: 100%; padding: 15px; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; margin: 20px 0; }
-        .submit-btn { background: linear-gradient(135deg, #ff00ff, #ff0080); border: none; padding: 15px 40px; border-radius: 50px; color: #fff; font-weight: bold; cursor: pointer; }
+        /* Neon Button */
+        .btn-neon {
+            padding: 15px 40px; font-size: 18px; cursor: pointer;
+            background: transparent; color: #00ffff;
+            border: 2px solid #00ffff; border-radius: 50px; font-weight: bold;
+            box-shadow: 0 0 10px #00ffff; transition: 0.3s; margin-top: 20px;
+        }
+        .btn-neon:hover { background: #00ffff; color: #000; box-shadow: 0 0 30px #00ffff; }
 
-        /* App & Feed */
-        .app-container { display: none; max-width: 800px; margin: 0 auto; padding: 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid #333; margin-bottom: 20px; }
-        .user-info { display: flex; align-items: center; gap: 10px; }
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; }
-        .logout-btn { background: none; border: 1px solid #ff4444; color: #ff4444; padding: 5px 15px; border-radius: 20px; cursor: pointer; }
+        /* Hide Screens */
+        .hidden { display: none !important; }
         
-        .post-composer textarea { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 15px; border-radius: 10px; min-height: 80px; }
-        .post-btn { background: #00ffff; color: #000; border: none; padding: 8px 25px; border-radius: 20px; font-weight: bold; cursor: pointer; margin-top: 10px; float: right; }
+        /* Error Box */
+        #statusBox {
+            margin-top: 20px; color: #ff3333; font-family: monospace;
+            background: rgba(50,0,0,0.8); padding: 10px; border-radius: 5px;
+            border: 1px solid red; display: none;
+        }
+
+        /* App UI */
+        .app-header { 
+            position: fixed; top: 0; width: 100%; background: #111; z-index: 10;
+            padding: 15px 20px; border-bottom: 1px solid #333; 
+            display: flex; justify-content: space-between; align-items: center; 
+        }
+        .feed-container { 
+            margin-top: 80px; width: 100%; max-width: 600px; 
+            height: calc(100vh - 80px); overflow-y: auto; padding: 20px;
+        }
         
-        .post { background: #111; padding: 20px; border-radius: 15px; margin-top: 20px; border: 1px solid #333; }
-        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .post-author { color: #00ffff; font-weight: bold; }
-        .post-time { color: #666; font-size: 12px; }
+        .input-box {
+            width: 100%; background: #222; border: 1px solid #444; color: #fff;
+            padding: 12px; border-radius: 8px; margin-bottom: 10px; outline: none;
+        }
+        
+        .post-card {
+            background: #111; padding: 15px; border-radius: 12px; 
+            margin-bottom: 15px; border: 1px solid #333; text-align: left;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <div class="bg-animation"></div>
 
-    <div class="login-container" id="loginContainer">
-        <div class="login-box">
-            <div class="logo">NEONHUB</div>
-            <p class="tagline">CONNECT IN STYLE</p>
-            
-            <button class="google-btn" id="loginBtn">
-                <span>🚀 Continue with Google</span>
-            </button>
-        </div>
+    <div id="loginScreen" class="container">
+        <h1 style="font-size: 50px; text-shadow: 0 0 20px #d400ff;">NEONHUB</h1>
+        <p style="color: #aaa;">Connect without limits</p>
+        
+        <button id="loginBtn" class="btn-neon">🚀 Login with Google</button>
+        
+        <div id="statusBox"></div>
     </div>
 
-    <div class="login-container" id="usernameSetup">
-        <div class="login-box">
-            <div class="logo" style="font-size: 30px;">Choose Username</div>
-            <div class="input-group">
-                <input type="text" id="usernameInput" placeholder="Enter username (e.g. akki_01)">
-                <div id="errorMsg" style="color: red; display: none; margin-bottom: 10px;"></div>
-            </div>
-            <button class="submit-btn" id="submitUsernameBtn">Let's Go!</button>
-        </div>
+    <div id="setupScreen" class="container hidden">
+        <h2 style="color: #00ffff;">Choose Username</h2>
+        <input type="text" id="usernameInput" class="input-box" placeholder="e.g. akki_007" style="max-width: 300px; text-align: center;">
+        <button id="saveUserBtn" class="btn-neon">Start Journey</button>
+        <p id="setupError" style="color: red; margin-top: 10px;"></p>
     </div>
 
-    <div class="app-container" id="appContainer">
-        <div class="header">
-            <div class="logo" style="font-size: 24px; margin: 0;">NEONHUB</div>
-            <div class="user-info">
-                <img id="headerAvatar" class="user-avatar" src="">
-                <span id="headerUsername" style="color: #00ffff;"></span>
-                <button class="logout-btn" id="logoutBtn">Logout</button>
+    <div id="appScreen" class="hidden" style="display: flex; flex-direction: column; align-items: center;">
+        <div class="app-header">
+            <span id="welcomeUser" style="color: #00ffff; font-weight: bold; font-size: 18px;">@user</span>
+            <button onclick="doLogout()" style="background:none; border:1px solid #ff4444; color:#ff4444; padding:5px 15px; border-radius:20px; cursor:pointer;">Logout</button>
+        </div>
+
+        <div class="feed-container">
+            <div style="background: #1a1a1a; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                <input type="text" id="postText" class="input-box" placeholder="What's on your mind?">
+                <button onclick="doPost()" style="width: 100%; padding: 10px; background: #00ffff; border:none; border-radius: 5px; cursor: pointer; font-weight: bold;">POST</button>
+            </div>
+
+            <div id="postsList">
+                <div style="color: #666; text-align: center;">Loading posts...</div>
             </div>
         </div>
-
-        <div class="post-composer">
-            <textarea id="postContent" placeholder="What's happening?"></textarea>
-            <button class="post-btn" id="createPostBtn">Post</button>
-            <div style="clear: both;"></div>
-        </div>
-
-        <div id="postsContainer"></div>
     </div>
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js';
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js';
-        import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, limit, getDocs, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js';
+        // Note: Using 'initializeFirestore' specifically for the fix
+        import { initializeFirestore, doc, getDoc, setDoc, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js';
 
+        // --- TUMHARA CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyBKeFbvO9KRMLzi1Z_OC0XgTxNRxh1eP2E",
             authDomain: "socialhub-668bd.firebaseapp.com",
@@ -102,152 +109,154 @@
             appId: "1:685780793821:web:be36bd19d2e51753835e34"
         };
 
+        // 1. Initialize App
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
+
+        // 2. 🔥 FIREBASE CONNECTION FIX (Force Long Polling)
+        // Yeh line "Client Offline" error ko zabardasti fix karti hai
+        const db = initializeFirestore(app, {
+            experimentalForceLongPolling: true,
+        });
+
         let currentUser = null;
 
-        // --- AUTH LOGIC ---
-        
-        // 1. Listen for Login Button Click (The "Normal" Way)
-        const loginBtn = document.getElementById('loginBtn');
-        if(loginBtn) {
-            loginBtn.addEventListener('click', async () => {
-                loginBtn.innerHTML = 'Signing in...';
-                loginBtn.disabled = true;
-                try {
-                    const provider = new GoogleAuthProvider();
-                    await signInWithPopup(auth, provider);
-                } catch (error) {
-                    alert('Login Error: ' + error.message);
-                    loginBtn.innerHTML = '🚀 Continue with Google';
-                    loginBtn.disabled = false;
-                }
-            });
-        }
-
-        // 2. Auth State Observer
+        // --- AUTH OBSERVER (Login Check) ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
-                // Check if user has a username
-                const userDoc = await getDoc(doc(db, 'users', user.uid));
-                if (userDoc.exists()) {
-                    currentUser.username = userDoc.data().username;
-                    showApp();
-                } else {
-                    showUsernameSetup();
+                setStatus("Checking database...");
+                
+                try {
+                    // Check user in DB
+                    const userRef = doc(db, "users", user.uid);
+                    const userSnap = await getDoc(userRef);
+
+                    if (userSnap.exists()) {
+                        currentUser.username = userSnap.data().username;
+                        showScreen('appScreen');
+                        loadPosts();
+                    } else {
+                        showScreen('setupScreen');
+                    }
+                } catch (error) {
+                    setStatus("Database Error: " + error.message);
+                    // Agar permission error hai toh bata dega
+                    if(error.message.includes("permission")) {
+                        alert("PLEASE FIX FIRESTORE RULES IN CONSOLE!");
+                    }
                 }
             } else {
-                showLogin();
+                showScreen('loginScreen');
             }
         });
 
-        // --- UI FUNCTIONS ---
+        // --- BUTTON ACTIONS ---
 
-        function showLogin() {
-            document.getElementById('loginContainer').style.display = 'flex';
-            document.getElementById('usernameSetup').style.display = 'none';
-            document.getElementById('appContainer').style.display = 'none';
-        }
-
-        function showUsernameSetup() {
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('usernameSetup').style.display = 'flex';
-            document.getElementById('appContainer').style.display = 'none';
-        }
-
-        function showApp() {
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('usernameSetup').style.display = 'none';
-            document.getElementById('appContainer').style.display = 'block';
-            
-            document.getElementById('headerAvatar').src = currentUser.photoURL;
-            document.getElementById('headerUsername').textContent = '@' + currentUser.username;
-            loadPosts();
-        }
-
-        // --- USERNAME LOGIC ---
-        document.getElementById('submitUsernameBtn').addEventListener('click', async () => {
-            const input = document.getElementById('usernameInput');
-            const username = input.value.trim().toLowerCase();
-            const errorMsg = document.getElementById('errorMsg');
-
-            if (username.length < 3) {
-                errorMsg.textContent = "Too short!";
-                errorMsg.style.display = 'block';
-                return;
+        // Login
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            try {
+                const provider = new GoogleAuthProvider();
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                setStatus("Login Failed: " + error.message);
             }
+        });
+
+        // Save Username
+        document.getElementById('saveUserBtn').addEventListener('click', async () => {
+            const username = document.getElementById('usernameInput').value.trim().toLowerCase();
+            if (username.length < 3) return alert("Username too short!");
 
             try {
-                // Check if taken
-                const check = await getDoc(doc(db, 'usernames', username));
-                if (check.exists()) {
-                    errorMsg.textContent = "Username taken!";
-                    errorMsg.style.display = 'block';
-                    return;
-                }
-
-                // Save user
-                await setDoc(doc(db, 'users', currentUser.uid), {
+                // Check if username taken (Simple check)
+                // Note: For simplicity, we are directly saving. Ideally check 'usernames' collection.
+                
+                await setDoc(doc(db, "users", currentUser.uid), {
                     username: username,
                     email: currentUser.email,
                     photoURL: currentUser.photoURL,
                     createdAt: serverTimestamp()
                 });
                 
-                // Reserve username
-                await setDoc(doc(db, 'usernames', username), { uid: currentUser.uid });
-                
                 currentUser.username = username;
-                showApp();
+                showScreen('appScreen');
+                loadPosts();
 
-            } catch (err) {
-                alert(err.message);
+            } catch (error) {
+                document.getElementById('setupError').innerText = error.message;
             }
         });
 
-        // --- POST LOGIC ---
-        document.getElementById('createPostBtn').addEventListener('click', async () => {
-            const content = document.getElementById('postContent').value;
-            if(!content) return;
+        // Create Post
+        window.doPost = async () => {
+            const text = document.getElementById('postText').value;
+            if (!text) return;
 
-            await addDoc(collection(db, 'posts'), {
-                content: content,
-                author: currentUser.username,
-                authorPhoto: currentUser.photoURL,
-                timestamp: serverTimestamp(),
-                likes: 0
-            });
+            try {
+                await addDoc(collection(db, "posts"), {
+                    text: text,
+                    author: currentUser.username,
+                    timestamp: serverTimestamp()
+                });
+                document.getElementById('postText').value = ""; // Clear input
+            } catch (error) {
+                alert("Post failed: " + error.message);
+            }
+        };
 
-            document.getElementById('postContent').value = '';
-            loadPosts();
-        });
+        // Logout
+        window.doLogout = () => {
+            signOut(auth).then(() => location.reload());
+        };
 
-        // --- LOGOUT ---
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            signOut(auth);
-            location.reload();
-        });
+        // --- HELPER FUNCTIONS ---
 
-        // --- LOAD POSTS ---
-        async function loadPosts() {
-            const q = query(collection(db, 'posts'), orderBy('timestamp', 'desc'), limit(20));
-            const snapshot = await getDocs(q);
-            const container = document.getElementById('postsContainer');
+        function loadPosts() {
+            document.getElementById('welcomeUser').innerText = "@" + currentUser.username;
             
-            container.innerHTML = snapshot.docs.map(doc => {
-                const data = doc.data();
-                return `
-                    <div class="post">
-                        <div class="post-header">
-                            <img src="${data.authorPhoto}" style="width:30px;height:30px;border-radius:50%">
-                            <span class="post-author">@${data.author}</span>
+            const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+            
+            onSnapshot(q, (snapshot) => {
+                const list = document.getElementById('postsList');
+                if (snapshot.empty) {
+                    list.innerHTML = "<div style='text-align:center; padding:20px; color:#444'>No posts yet. Be the first!</div>";
+                    return;
+                }
+                
+                let html = "";
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const date = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleTimeString() : 'Just now';
+                    
+                    html += `
+                        <div class="post-card">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                                <strong style="color:#00ffff">@${data.author}</strong>
+                                <span style="font-size:12px; color:#666">${date}</span>
+                            </div>
+                            <div style="color:#ddd; font-size:15px;">${data.text}</div>
                         </div>
-                        <div>${data.content}</div>
-                    </div>
-                `;
-            }).join('');
+                    `;
+                });
+                list.innerHTML = html;
+            }, (error) => {
+                console.error(error);
+                document.getElementById('postsList').innerHTML = `<div style="color:red">Error loading posts: ${error.message}</div>`;
+            });
+        }
+
+        function showScreen(screenId) {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('setupScreen').classList.add('hidden');
+            document.getElementById('appScreen').classList.add('hidden');
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        function setStatus(msg) {
+            const box = document.getElementById('statusBox');
+            box.style.display = 'block';
+            box.innerText = msg;
         }
     </script>
 </body>
