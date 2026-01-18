@@ -420,11 +420,11 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK - LATEST VERSION -->
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, limit, getDocs, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js';
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js';
+        import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, limit, getDocs, addDoc, serverTimestamp, connectFirestoreEmulator } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js';
 
         // Firebase Configuration
         const firebaseConfig = {
@@ -438,9 +438,17 @@
         };
 
         // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        let app, auth, db;
+        
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            console.log('Firebase initialized successfully');
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+            alert('Firebase initialization failed. Please check console.');
+        }
 
         // Global variables
         window.currentUser = null;
@@ -449,17 +457,26 @@
 
         // Check authentication state
         onAuthStateChanged(auth, async (user) => {
+            console.log('Auth state changed:', user ? 'User logged in' : 'No user');
+            
             if (user) {
                 window.currentUser = user;
                 
-                // Check if user has username
-                const userDoc = await getDoc(doc(db, 'users', user.uid));
-                if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    window.currentUser.username = userData.username;
-                    showApp();
-                } else {
-                    showUsernameSetup();
+                try {
+                    // Check if user has username
+                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        window.currentUser.username = userData.username;
+                        console.log('User has username:', userData.username);
+                        showApp();
+                    } else {
+                        console.log('User needs to set username');
+                        showUsernameSetup();
+                    }
+                } catch (error) {
+                    console.error('Error checking user data:', error);
+                    alert('Error loading user data: ' + error.message);
                 }
             } else {
                 window.currentUser = null;
@@ -479,7 +496,8 @@
             
             try {
                 const provider = new GoogleAuthProvider();
-                await signInWithPopup(auth, provider);
+                const result = await signInWithPopup(auth, provider);
+                console.log('Sign in successful:', result.user.email);
             } catch (error) {
                 console.error('Error signing in:', error);
                 alert('Login failed: ' + error.message);
@@ -518,6 +536,8 @@
             }
             
             try {
+                console.log('Checking username availability:', username);
+                
                 // Check if username exists
                 const usernameDoc = await getDoc(doc(db, 'usernames', username));
                 if (usernameDoc.exists()) {
@@ -525,6 +545,8 @@
                     errorMsg.style.display = 'block';
                     return;
                 }
+                
+                console.log('Creating user profile...');
                 
                 // Save username
                 await setDoc(doc(db, 'users', window.currentUser.uid), {
@@ -544,21 +566,24 @@
                 successMsg.textContent = 'Username created successfully!';
                 successMsg.style.display = 'block';
                 
+                console.log('Username created successfully');
+                
                 setTimeout(showApp, 1000);
             } catch (error) {
                 console.error('Error creating username:', error);
-                errorMsg.textContent = 'Error creating username';
+                errorMsg.textContent = 'Error: ' + error.message;
                 errorMsg.style.display = 'block';
             }
         };
 
         // Show app
         window.showApp = async function() {
+            console.log('Showing app...');
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('usernameSetup').style.display = 'none';
             document.getElementById('appContainer').style.display = 'block';
             
-            document.getElementById('headerAvatar').src = window.currentUser.photoURL;
+            document.getElementById('headerAvatar').src = window.currentUser.photoURL || 'https://ui-avatars.com/api/?name=User&background=667eea&color=fff&size=200';
             document.getElementById('headerUsername').textContent = '@' + window.currentUser.username;
             
             loadPosts();
@@ -570,6 +595,8 @@
             if (!content) return;
             
             try {
+                console.log('Creating post...');
+                
                 await addDoc(collection(db, 'posts'), {
                     author: window.currentUser.username,
                     authorPhoto: window.currentUser.photoURL,
@@ -580,10 +607,12 @@
                 });
                 
                 document.getElementById('postContent').value = '';
-                loadPosts();
+                console.log('Post created successfully');
+                
+                setTimeout(loadPosts, 500);
             } catch (error) {
                 console.error('Error creating post:', error);
-                alert('Error creating post');
+                alert('Error creating post: ' + error.message);
             }
         };
 
@@ -592,6 +621,8 @@
             const container = document.getElementById('postsContainer');
             
             try {
+                console.log('Loading posts...');
+                
                 const q = query(collection(db, 'posts'), orderBy('timestamp', 'desc'), limit(20));
                 const querySnapshot = await getDocs(q);
                 
@@ -605,10 +636,12 @@
                     posts.push({ id: doc.id, ...doc.data() });
                 });
                 
+                console.log('Loaded posts:', posts.length);
+                
                 container.innerHTML = posts.map(post => `
                     <div class="post">
                         <div class="post-header">
-                            <img src="${post.authorPhoto}" alt="${post.author}" class="post-avatar">
+                            <img src="${post.authorPhoto || 'https://ui-avatars.com/api/?name=User&background=667eea&color=fff&size=200'}" alt="${post.author}" class="post-avatar">
                             <div>
                                 <div class="post-author">@${post.author}</div>
                                 <div class="post-time">${getTimeAgo(post.timestamp)}</div>
@@ -624,20 +657,26 @@
                 `).join('');
             } catch (error) {
                 console.error('Error loading posts:', error);
+                container.innerHTML = '<p style="text-align: center; color: #e74c3c; padding: 40px;">Error loading posts. Please refresh the page.</p>';
             }
         };
 
         // Get time ago
         window.getTimeAgo = function(timestamp) {
             if (!timestamp) return 'Just now';
-            const now = new Date();
-            const past = timestamp.toDate();
-            const seconds = Math.floor((now - past) / 1000);
             
-            if (seconds < 60) return 'Just now';
-            if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
-            if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
-            return Math.floor(seconds / 86400) + 'd ago';
+            try {
+                const now = new Date();
+                const past = timestamp.toDate();
+                const seconds = Math.floor((now - past) / 1000);
+                
+                if (seconds < 60) return 'Just now';
+                if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
+                if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
+                return Math.floor(seconds / 86400) + 'd ago';
+            } catch {
+                return 'Just now';
+            }
         };
 
         // Escape HTML
@@ -652,6 +691,7 @@
             if (confirm('Are you sure you want to logout?')) {
                 try {
                     await signOut(auth);
+                    console.log('Logged out successfully');
                 } catch (error) {
                     console.error('Error signing out:', error);
                     alert('Error signing out');
