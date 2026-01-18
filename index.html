@@ -788,3 +788,14 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.
+window.logout = async function() {
+        if (confirm('🚀 Ready to leave? Come back soon!')) {
+            try {
+                await signOut(auth);
+                location.reload();
+            } catch (error) {
+                alert('Error signing out');
+            }
+        }
+    };
+</script>
