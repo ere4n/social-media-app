@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialHub - Connect & Share</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        .app-container {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        .google-btn {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 14px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            margin: 0 auto;
+        }
+
+        .google-btn:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .google-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .username-setup {
+            display: none;
+            padding: 40px;
+        }
+
+        .username-setup h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .username-setup p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .username-hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+            text-align: left;
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .success-msg {
+            color: #27ae60;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .username-display {
+            color: white;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            min-height: 500px;
+        }
+
+        .sidebar {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .feed {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .post-composer {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-composer textarea {
+            width: 100%;
+            border: none;
+            resize: none;
+            font-size: 16px;
+            padding: 10px;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .post-composer textarea:focus {
+            outline: none;
+        }
+
+        .post-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            float: right;
+        }
+
+        .post-btn:hover {
+            opacity: 0.9;
+        }
+
+        .post {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .post-author {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .post-time {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .post-content {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .action-btn {
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .action-btn:hover {
+            color: #667eea;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Screen -->
+        <div class="login-container" id="loginContainer">
+            <div class="logo">SocialHub</div>
+            <p class="tagline">Connect with friends and share your moments</p>
+            
+            <button class="google-btn" id="googleSignInBtn" onclick="signInWithGoogle()">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                <span id="btnText">Continue with Google</span>
+            </button>
+        </div>
+
+        <!-- Username Setup -->
+        <div class="login-container" id="usernameSetup">
+            <div class="username-setup">
+                <h2>Choose Your Username</h2>
+                <p>Pick a unique username for your profile</p>
+                <div class="input-group">
+                    <input type="text" id="usernameInput" placeholder="Enter username" maxlength="20">
+                    <div class="username-hint">3-20 characters, letters, numbers, and underscores only</div>
+                    <div class="error-msg" id="errorMsg"></div>
+                    <div class="success-msg" id="successMsg"></div>
+                </div>
+                <button class="submit-btn" onclick="submitUsername()">Continue</button>
+            </div>
+        </div>
+
+        <!-- Main App -->
+        <div class="app-container" id="appContainer">
+            <div class="header">
+                <div class="header-logo">SocialHub</div>
+                <div class="user-info">
+                    <img src="" alt="User" class="user-avatar" id="headerAvatar">
+                    <span class="username-display" id="headerUsername"></span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+            
+            <div class="main-content">
+                <div class="sidebar">
+                    <h3>Trending</h3>
+                    <p style="color: #999; margin-top: 10px;">No trending topics yet</p>
+                </div>
+                
+                <div class="feed">
+                    <div class="post-composer">
+                        <textarea id="postContent" placeholder="What's on your mind?"></textarea>
+                        <button class="post-btn" onclick="createPost()">Post</button>
+                        <div style="clear: both;"></div>
+                    </div>
+                    
+                    <div id="postsContainer">
+                        <!-- Posts will appear here -->
+                    </div>
+                </div>
+                
+                <div class="sidebar">
+                    <h3>Suggestions</h3>
+                    <p style="color: #999; margin-top: 10px;">Connect with others</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, getDoc, setDoc, collection, query, orderBy, limit, getDocs, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBKeFbvO9KRMLzi1Z_OC0XgTxNRxh1eP2E",
+            authDomain: "socialhub-668bd.firebaseapp.com",
+            projectId: "socialhub-668bd",
+            storageBucket: "socialhub-668bd.firebasestorage.app",
+            messagingSenderId: "685780793821",
+            appId: "1:685780793821:web:be36bd19d2e51753835e34",
+            measurementId: "G-FQ1DKGZ44N"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Global variables
+        window.currentUser = null;
+        window.auth = auth;
+        window.db = db;
+
+        // Check authentication state
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                window.currentUser = user;
+                
+                // Check if user has username
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    window.currentUser.username = userData.username;
+                    showApp();
+                } else {
+                    showUsernameSetup();
+                }
+            } else {
+                window.currentUser = null;
+                document.getElementById('loginContainer').style.display = 'block';
+                document.getElementById('usernameSetup').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'none';
+            }
+        });
+
+        // Google Sign-In
+        window.signInWithGoogle = async function() {
+            const btn = document.getElementById('googleSignInBtn');
+            const btnText = document.getElementById('btnText');
+            
+            btn.disabled = true;
+            btnText.innerHTML = '<span class="loading"></span> Signing in...';
+            
+            try {
+                const provider = new GoogleAuthProvider();
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                console.error('Error signing in:', error);
+                alert('Login failed: ' + error.message);
+                btn.disabled = false;
+                btnText.textContent = 'Continue with Google';
+            }
+        };
+
+        // Show username setup
+        window.showUsernameSetup = function() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('usernameSetup').style.display = 'block';
+            document.getElementById('appContainer').style.display = 'none';
+        };
+
+        // Submit username
+        window.submitUsername = async function() {
+            const input = document.getElementById('usernameInput');
+            const username = input.value.trim().toLowerCase();
+            const errorMsg = document.getElementById('errorMsg');
+            const successMsg = document.getElementById('successMsg');
+            
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            
+            if (username.length < 3 || username.length > 20) {
+                errorMsg.textContent = 'Username must be 3-20 characters';
+                errorMsg.style.display = 'block';
+                return;
+            }
+            
+            if (!/^[a-z0-9_]+$/.test(username)) {
+                errorMsg.textContent = 'Only letters, numbers, and underscores allowed';
+                errorMsg.style.display = 'block';
+                return;
+            }
+            
+            try {
+                // Check if username exists
+                const usernameDoc = await getDoc(doc(db, 'usernames', username));
+                if (usernameDoc.exists()) {
+                    errorMsg.textContent = 'Username already taken';
+                    errorMsg.style.display = 'block';
+                    return;
+                }
+                
+                // Save username
+                await setDoc(doc(db, 'users', window.currentUser.uid), {
+                    username: username,
+                    email: window.currentUser.email,
+                    photoURL: window.currentUser.photoURL,
+                    displayName: window.currentUser.displayName,
+                    createdAt: serverTimestamp()
+                });
+                
+                await setDoc(doc(db, 'usernames', username), {
+                    uid: window.currentUser.uid
+                });
+                
+                window.currentUser.username = username;
+                
+                successMsg.textContent = 'Username created successfully!';
+                successMsg.style.display = 'block';
+                
+                setTimeout(showApp, 1000);
+            } catch (error) {
+                console.error('Error creating username:', error);
+                errorMsg.textContent = 'Error creating username';
+                errorMsg.style.display = 'block';
+            }
+        };
+
+        // Show app
+        window.showApp = async function() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('usernameSetup').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'block';
+            
+            document.getElementById('headerAvatar').src = window.currentUser.photoURL;
+            document.getElementById('headerUsername').textContent = '@' + window.currentUser.username;
+            
+            loadPosts();
+        };
+
+        // Create post
+        window.createPost = async function() {
+            const content = document.getElementById('postContent').value.trim();
+            if (!content) return;
+            
+            try {
+                await addDoc(collection(db, 'posts'), {
+                    author: window.currentUser.username,
+                    authorPhoto: window.currentUser.photoURL,
+                    authorUid: window.currentUser.uid,
+                    content: content,
+                    timestamp: serverTimestamp(),
+                    likes: 0
+                });
+                
+                document.getElementById('postContent').value = '';
+                loadPosts();
+            } catch (error) {
+                console.error('Error creating post:', error);
+                alert('Error creating post');
+            }
+        };
+
+        // Load posts
+        window.loadPosts = async function() {
+            const container = document.getElementById('postsContainer');
+            
+            try {
+                const q = query(collection(db, 'posts'), orderBy('timestamp', 'desc'), limit(20));
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    container.innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No posts yet. Be the first to share something!</p>';
+                    return;
+                }
+                
+                const posts = [];
+                querySnapshot.forEach((doc) => {
+                    posts.push({ id: doc.id, ...doc.data() });
+                });
+                
+                container.innerHTML = posts.map(post => `
+                    <div class="post">
+                        <div class="post-header">
+                            <img src="${post.authorPhoto}" alt="${post.author}" class="post-avatar">
+                            <div>
+                                <div class="post-author">@${post.author}</div>
+                                <div class="post-time">${getTimeAgo(post.timestamp)}</div>
+                            </div>
+                        </div>
+                        <div class="post-content">${escapeHtml(post.content)}</div>
+                        <div class="post-actions">
+                            <span class="action-btn">❤️ ${post.likes} Likes</span>
+                            <span class="action-btn">💬 Comment</span>
+                            <span class="action-btn">🔄 Share</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading posts:', error);
+            }
+        };
+
+        // Get time ago
+        window.getTimeAgo = function(timestamp) {
+            if (!timestamp) return 'Just now';
+            const now = new Date();
+            const past = timestamp.toDate();
+            const seconds = Math.floor((now - past) / 1000);
+            
+            if (seconds < 60) return 'Just now';
+            if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
+            return Math.floor(seconds / 86400) + 'd ago';
+        };
+
+        // Escape HTML
+        window.escapeHtml = function(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        };
+
+        // Logout
+        window.logout = async function() {
+            if (confirm('Are you sure you want to logout?')) {
+                try {
+                    await signOut(auth);
+                } catch (error) {
+                    console.error('Error signing out:', error);
+                    alert('Error signing out');
+                }
+            }
+        };
+    </script>
+</body>
+</html>
