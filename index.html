@@ -499,7 +499,6 @@
     <div class="bg-animation"></div>
     <div class="particles" id="particles"></div>
 
-    <!-- Login Screen -->
     <div class="login-container" id="loginContainer">
         <div class="login-box">
             <div class="logo">NEONHUB</div>
@@ -517,10 +516,9 @@
         </div>
     </div>
 
-    <!-- Username Setup -->
     <div class="login-container" id="usernameSetup" style="display: none;">
         <div class="login-box">
-            <div class="username-setup">
+            <div class="username-setup" style="display: block;">
                 <div class="logo" style="font-size: 42px;">Choose Username</div>
                 <p class="tagline">Make it unique</p>
                 
@@ -536,7 +534,6 @@
         </div>
     </div>
 
-    <!-- Main App -->
     <div class="app-container" id="appContainer">
         <div class="header">
             <div class="header-logo">NEONHUB</div>
@@ -592,7 +589,7 @@
             particlesContainer.appendChild(particle);
         }
 
-        // Firebase Configuration
+        // Firebase Configuration - Your Details
         const firebaseConfig = {
             apiKey: "AIzaSyBKeFbvO9KRMLzi1Z_OC0XgTxNRxh1eP2E",
             authDomain: "socialhub-668bd.firebaseapp.com",
@@ -784,18 +781,23 @@
             }
         };
 
+        // FIXED FUNCTION
         window.escapeHtml = function(text) {
             const div = document.createElement('div');
             div.textContent = text;
-            return div.
-window.logout = async function() {
-        if (confirm('🚀 Ready to leave? Come back soon!')) {
-            try {
-                await signOut(auth);
-                location.reload();
-            } catch (error) {
-                alert('Error signing out');
+            return div.innerHTML;
+        };
+
+        window.logout = async function() {
+            if (confirm('🚀 Ready to leave? Come back soon!')) {
+                try {
+                    await signOut(auth);
+                    location.reload();
+                } catch (error) {
+                    alert('Error signing out');
+                }
             }
-        }
-    };
-</script>
+        };
+    </script>
+</body>
+</html>
